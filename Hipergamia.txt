@@ -1,0 +1,419 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// ==========================================
+// 1. INTERFEJSY
+// ==========================================
+
+interface Feedable {
+    void feed(String foodType);
+    boolean isHungry();
+}
+
+interface MedicalCare {
+    void performCheckup();
+    void vaccinate();
+}
+
+// ==========================================
+// 2. KLASA ABSTRAKCYJNA I HIERARCHIA ZWIERZĄT
+// ==========================================
+
+abstract class Animal implements Feedable, MedicalCare {
+    private String name;
+    private int age;
+    private int health;
+    private int hunger;
+    private boolean vaccinated;
+
+    public Animal(String name, int age, int health, int hunger, boolean vaccinated) {
+        setAge(age);
+        setName(name);
+        setHealth(health);
+        setHunger(hunger);
+        this.vaccinated = vaccinated;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Imię nie może być puste");
+        }
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        if (age < 0 || age > 200) {
+            throw new IllegalArgumentException("Wiek musi być w przedziale od 0 do 200");
+        }
+        this.age = age;
+    }
+
+    public int getHunger() {
+        return hunger;
+    }
+
+    public void setHunger(int hunger) {
+        if (hunger < 0 || hunger > 100) {
+            throw new IllegalArgumentException("Głód musi być w przedziale od 0 do 100");
+        }
+        this.hunger = hunger;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        if (health < 0 || health > 100) {
+            throw new IllegalArgumentException("Zdrowie musi być w przedziale od 0 do 100");
+        }
+        this.health = health;
+    }
+
+    public boolean isVaccinated() {
+        return vaccinated;
+    }
+
+    public void setVaccinated(boolean vaccinated) {
+        this.vaccinated = vaccinated;
+    }
+
+    // Metody abstrakcyjne wymagane w zadaniu
+    public abstract void makeSound();
+    public abstract String getDietType();
+
+    // Implementacja interfejsu Feedable
+    @Override
+    public void feed(String foodType) {
+        System.out.println(name + " je jedzenie typu: " + foodType);
+        setHunger(Math.max(0, hunger - 30)); // Karmienie zmniejsza głód
+    }
+
+    @Override
+    public boolean isHungry() {
+        return hunger > 50;
+    }
+
+    // Implementacja interfejsu MedicalCare
+    @Override
+    public void performCheckup() {
+        System.out.println("Przeprowadzono kontrolę weterynaryjną dla: " + name);
+        setHealth(Math.min(100, health + 10)); // Kontrola lekko poprawia stan
+    }
+
+    @Override
+    public void vaccinate() {
+        this.vaccinated = true;
+        System.out.println(name + " został zaszczepiony.");
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Gatunek: %s | Imię: %s | Wiek: %d | Zdrowie: %d | Głód: %d | Zaszczepiony: %s | Dieta: %s",
+                this.getClass().getSimpleName(), name, age, health, hunger, vaccinated ? "Tak" : "Nie", getDietType());
+    }
+}
+
+// Klasy pośrednie
+abstract class Mammal extends Animal {
+    public Mammal(String name, int age, int health, int hunger, boolean vaccinated) {
+        super(name, age, health, hunger, vaccinated);
+    }
+}
+
+abstract class Bird extends Animal {
+    public Bird(String name, int age, int health, int hunger, boolean vaccinated) {
+        super(name, age, health, hunger, vaccinated);
+    }
+}
+
+abstract class Reptile extends Animal {
+    public Reptile(String name, int age, int health, int hunger, boolean vaccinated) {
+        super(name, age, health, hunger, vaccinated);
+    }
+}
+
+// Klasy konkretne
+class Lion extends Mammal {
+    public Lion(String name, int age, int health, int hunger, boolean vaccinated) {
+        super(name, age, health, hunger, vaccinated);
+    }
+
+    @Override
+    public void makeSound() {
+        System.out.println(getName() + " ryczy: RWAARR!");
+    }
+
+    @Override
+    public String getDietType() {
+        return "Mięso";
+    }
+}
+
+class Eagle extends Bird {
+    public Eagle(String name, int age, int health, int hunger, boolean vaccinated) {
+        super(name, age, health, hunger, vaccinated);
+    }
+
+    @Override
+    public void makeSound() {
+        System.out.println(getName() + " piszczy: Kiii-aah!");
+    }
+
+    @Override
+    public String getDietType() {
+        return "Mięso (ryby/małe ssaki)";
+    }
+}
+
+class Snake extends Reptile {
+    public Snake(String name, int age, int health, int hunger, boolean vaccinated) {
+        super(name, age, health, hunger, vaccinated);
+    }
+
+    @Override
+    public void makeSound() {
+        System.out.println(getName() + " syczy: Sssssss...");
+    }
+
+    @Override
+    public String getDietType() {
+        return "Mięso (gryzonie)";
+    }
+}
+
+// ==========================================
+// 3. POZOSTAŁE KLASY (Enclosure, Worker)
+// ==========================================
+
+class Enclosure {
+    private String name;
+    private int capacity;
+    private List<Animal> animals = new ArrayList<>();
+
+    public Enclosure(String name, int capacity) {
+        setName(name);
+        setCapacity(capacity);
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        if (capacity < 1) {
+            throw new IllegalArgumentException("Pojemność musi wynosić co najmniej 1");
+        }
+        this.capacity = capacity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nazwa wybiegu nie może być pusta");
+        }
+        this.name = name;
+    }
+
+    public List<Animal> getAnimals() {
+        return animals;
+    }
+
+    public void addAnimal(Animal animal) {
+        if (animals.size() >= capacity) {
+            throw new IllegalStateException("Wybieg jest pełny!");
+        }
+        animals.add(animal);
+    }
+}
+
+class Worker {
+    private String name;
+    private String position;
+
+    public Worker(String name, String position) {
+        this.name = name;
+        this.position = position;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+}
+
+// ==========================================
+// 4. KLASA ZARZĄDZAJĄCA Z VARARGS
+// ==========================================
+
+class WildCareManager {
+    private List<Animal> animals = new ArrayList<>();
+    private List<Enclosure> enclosures = new ArrayList<>();
+
+    // Wykorzystanie Varargs do dodawania wielu zwierząt
+    public void addAnimals(Animal... newAnimals) {
+        for (Animal a : newAnimals) {
+            animals.add(a);
+            System.out.println("Dodano do rezerwatu: " + a.getName());
+        }
+    }
+
+    // Wykorzystanie Varargs do karmienia grupy
+    public void feedGroup(String food, Animal... group) {
+        System.out.println("\n--- Karmienie grupy jedzeniem: " + food + " ---");
+        for (Animal a : group) {
+            a.feed(food);
+        }
+    }
+
+    public List<Animal> getAnimals() {
+        return animals;
+    }
+
+    public void addEnclosure(Enclosure enclosure) {
+        enclosures.add(enclosure);
+    }
+}
+
+// ==========================================
+// 5. GŁÓWNA KLASA PROGRAMU (INTERFEJS KONSOLOWY)
+// ==========================================
+
+public class Main {
+    public static void main(String[] args) {
+        WildCareManager manager = new WildCareManager();
+        Scanner scanner = new Scanner(System.in);
+
+        // Dodanie przykładowych zwierząt na start
+        manager.addAnimals(
+                new Lion("Simba", 5, 90, 40, true),
+                new Eagle("Sky", 3, 100, 60, false),
+                new Snake("Kaa", 8, 85, 30, true)
+        );
+
+        boolean running = true;
+        while (running) {
+            System.out.println("\n=== SYSTEM ZARZĄDZANIA REZERWATEM ===");
+            System.out.println("1. Wyświetl listę wszystkich zwierząt");
+            System.out.println("2. Dodaj nowe zwierzę");
+            System.out.println("3. Nakarmij zwierzę / grupę (Varargs)");
+            System.out.println("4. Przeprowadź kontrolę weterynaryjną / szczepienie");
+            System.out.println("5. Posłuchaj odgłosów wszystkich zwierząt (Polimorfizm)");
+            System.out.println("6. Wyjdź z programu");
+            System.out.print("Wybierz opcję (1-6): ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("\n--- LISTA ZWIERZĄT ---");
+                    if (manager.getAnimals().isEmpty()) {
+                        System.out.println("Brak zwierząt w rezerwacie.");
+                    } else {
+                        for (int i = 0; i < manager.getAnimals().size(); i++) {
+                            System.out.println((i + 1) + ". " + manager.getAnimals().get(i));
+                        }
+                    }
+                    break;
+
+                case "2":
+                    try {
+                        System.out.print("Podaj typ (1 - Lew, 2 - Orzeł, 3 - Wąż): ");
+                        int type = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Imię: ");
+                        String name = scanner.nextLine();
+                        System.out.print("Wiek: ");
+                        int age = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Zdrowie (0-100): ");
+                        int health = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Głód (0-100): ");
+                        int hunger = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Czy zaszczepiony? (tak/nie): ");
+                        boolean vaccinated = scanner.nextLine().equalsIgnoreCase("tak");
+
+                        Animal newAnimal = null;
+                        if (type == 1) newAnimal = new Lion(name, age, health, hunger, vaccinated);
+                        else if (type == 2) newAnimal = new Eagle(name, age, health, hunger, vaccinated);
+                        else if (type == 3) newAnimal = new Snake(name, age, health, hunger, vaccinated);
+
+                        if (newAnimal != null) {
+                            manager.addAnimals(newAnimal);
+                        } else {
+                            System.out.println("Nieznany typ zwierzęcia.");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Błąd podczas dodawania: " + e.getMessage());
+                    }
+                    break;
+
+                case "3":
+                    if (manager.getAnimals().isEmpty()) {
+                        System.out.println("Brak zwierząt do karmienia.");
+                        break;
+                    }
+                    System.out.print("Podaj rodzaj jedzenia: ");
+                    String food = scanner.nextLine();
+                    
+                    // Przykład użycia Varargs na wszystkich zwierzętach z listy
+                    Animal[] animalArray = manager.getAnimals().toArray(new Animal[0]);
+                    manager.feedGroup(food, animalArray);
+                    break;
+
+                case "4":
+                    if (manager.getAnimals().isEmpty()) {
+                        System.out.println("Brak zwierząt do opieki medycznej.");
+                        break;
+                    }
+                    System.out.println("\nWybierz zwierzę do kontroli:");
+                    for (int i = 0; i < manager.getAnimals().size(); i++) {
+                        System.out.println((i + 1) + ". " + manager.getAnimals().get(i).getName());
+                    }
+                    int index = Integer.parseInt(scanner.nextLine()) - 1;
+                    if (index >= 0 && index < manager.getAnimals().size()) {
+                        Animal selected = manager.getAnimals().get(index);
+                        selected.performCheckup();
+                        if (!selected.isVaccinated()) {
+                            System.out.print("Zwierzę nie jest zaszczepione. Zaszczepić teraz? (tak/nie): ");
+                            if (scanner.nextLine().equalsIgnoreCase("tak")) {
+                                selected.vaccinate();
+                            }
+                        }
+                    } else {
+                        System.out.println("Nieprawidłowy wybór.");
+                    }
+                    break;
+
+                case "5":
+                    System.out.println("\n--- ODGŁOSY ZWIERZĄT (POLIMORFIZM) ---");
+                    for (Animal a : manager.getAnimals()) {
+                        a.makeSound(); // Polimorficzne wywołanie bez instofanceof
+                    }
+                    break;
+
+                case "6":
+                    running = false;
+                    System.out.println("Zamykanie programu. Do widzenia!");
+                    break;
+
+                default:
+                    System.out.println("Nieznana opcja. Wybierz liczbę od 1 do 6.");
+            }
+        }
+        scanner.close();
+    }
+}
